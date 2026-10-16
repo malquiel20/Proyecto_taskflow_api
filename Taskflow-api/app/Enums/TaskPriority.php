@@ -2,10 +2,9 @@
 
 namespace App\Enums;
 
-enum TaskStatus: string
+enum TaskPriority: string
 {
-    case Pending = 'pending';
-    case InProgress = 'in_progress';
-    case Completed = 'completed';
-    case Cancelled = 'cancelled';
+    case Low = 'low';
+    case Medium = 'medium';
+    case High = 'high';
 }
