@@ -6,39 +6,33 @@ use Illuminate\Database\Seeder;
 use App\Models\Task;
 use App\Models\Project;
 use App\Models\User;
-use App\Enums\TaskPriority;
-use App\Enums\TaskStatus;
 
 class TaskSeeder extends Seeder
 {
     public function run(): void
     {
-        // Obtenemos un proyecto y un usuario existentes para cumplir con las llaves foráneas
-        $project = Project::first();
+        $projects = Project::all();
         $user = User::first() ?? User::factory()->create();
 
-        if ($project) {
-            Task::create([
-                'project_id' => $project->id,
-                'assigned_to' => $user->id,
-                'created_by' => $user->id,
-                'title' => 'Diseñar base de datos',
-                'description' => 'Crear diagrama entidad-relación y definir tablas.',
-                'due_date' => now()->addDays(5),
-                'priority' => TaskPriority::High, // Usando tu Enum de prioridad
-                'status' => TaskStatus::Pending,     // Usando tu Enum de estado
-            ]);
+        // Si no hay proyectos, salimos para evitar errores
+        if ($projects->isEmpty()) {
+            return;
+        }
 
-            Task::create([
-                'project_id' => $project->id,
-                'assigned_to' => $user->id,
-                'created_by' => $user->id,
-                'title' => 'Configurar autenticación',
-                'description' => 'Implementar sistema de login y tokens.',
-                'due_date' => now()->addDays(10),
-                'priority' => TaskPriority::Medium, // Usando tu Enum de prioridad
-                'status' => TaskStatus::InProgress, // Usando tu Enum de estado
-            ]);
+        // Recorremos cada proyecto para asignarle varias tareas (por ejemplo, 5 tareas por cada proyecto)
+        foreach ($projects as $project) {
+            for ($i = 1; $i <= 5; $i++) {
+                Task::create([
+                    'project_id' => $project->id,
+                    'assigned_to' => $user->id,
+                    'created_by' => $user->id,
+                    'title' => "Tarea de prueba {$i} para " . $project->name,
+                    'description' => "Esta es la descripción detallada de la tarea número {$i}.",
+                    'due_date' => now()->addDays($i * 2),
+                    'priority' => 'medium',
+                    'status' => 'pending',
+                ]);
+            }
         }
     }
 }
